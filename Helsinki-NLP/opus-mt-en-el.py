@@ -4,7 +4,7 @@ import nltk
 nltk.download('book')
 
 # Select the translation model from English to Greek
-model_name = 'facebook/nllb-200-3.3B'
+model_name = 'Helsinki-NLP/opus-mt-en-el'
 tokenizer = MarianTokenizer.from_pretrained(model_name)
 model = MarianMTModel.from_pretrained(model_name)
 
