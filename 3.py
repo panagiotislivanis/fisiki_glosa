@@ -3,7 +3,7 @@ import nltk
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
 
 # Επιλέξτε το μοντέλο μετάφρασης αγγλικών-ελληνικών
-model_name = "facebook/nllb-200-3.3B"
+model_name = "facebook/nllb-200-distilled-600M"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 translator = pipeline("translation", model=model, tokenizer=tokenizer,
