@@ -3,7 +3,7 @@ from nltk.tokenize import sent_tokenize, word_tokenize
 import nltk
 nltk.download('punkt')
 
-# Φόρτωση των αρχείων txt
+
 with open("text3.txt", 'r') as f:
     reference_text = f.read()
 with open("2/translated_book3.txt", 'r', encoding='utf-8') as f:
@@ -13,13 +13,11 @@ with open("3/translated_book3.txt", 'r', encoding='utf-8') as f:
 with open("Helsinki-NLP/translated_book3.txt", 'r', encoding='utf-8') as f:
     translation3 = f.read()
 
-# Κατακερματισμός του κειμένου σε προτάσεις
 reference_sentences = sent_tokenize(reference_text)
 translation1_sentences = sent_tokenize(translation1)
 translation2_sentences = sent_tokenize(translation2)
 translation3_sentences = sent_tokenize(translation3)
 
-# Υπολογισμός BLEU σκορ για κάθε πρόταση
 scores1, scores2, scores3 = [], [], []
 for ref_sentence, trans1, trans2, trans3 in zip(reference_sentences, translation1_sentences, translation2_sentences, translation3_sentences):
     ref_words = word_tokenize(ref_sentence)
@@ -35,7 +33,6 @@ for ref_sentence, trans1, trans2, trans3 in zip(reference_sentences, translation
     scores2.append(score2)
     scores3.append(score3)
 
-# Εκτύπωση μέσων σκορ
 print("Average BLEU score for translation 1:", sum(scores1) / len(scores1))
 print("Average BLEU score for translation 2:", sum(scores2) / len(scores2))
 print("Average BLEU score for translation 3:", sum(scores3) / len(scores3))
