@@ -1,26 +1,30 @@
-from nltk.book import *
-import nltk
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM, pipeline
+import pandas as pd
+import matplotlib.pyplot as plt
+from statsmodels.tsa.arima.model import ARIMA
 
-# Επιλέξτε το μοντέλο μετάφρασης αγγλικών-ελληνικών
-model_name = "facebook/nllb-200-distilled-1.3B"
-tokenizer = AutoTokenizer.from_pretrained(model_name)
-model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-translator = pipeline("translation", model=model, tokenizer=tokenizer,
-                      src_lang="eng_Latn", tgt_lang="ell_Grek", max_length=400)
+df = pd.read_csv('Earthquakes_v2.csv')
 
-# Χρησιμοποιήστε το τρίτο βιβλίο από τη βιβλιοθήκη nltk
-book_text = ' '.join(text3)
+# Ensure the timestamp is in datetime format and set it as the index
+df['DATETIME'] = pd.to_datetime(df['DATETIME'])
+df.set_index('DATETIME', inplace=True)
 
-# Διαχωρίστε το κείμενο σε προτάσεις
-sentences = nltk.sent_tokenize(book_text)
+# Filter data for the last two years
+current_year = pd.Timestamp.now().year
+start_date = pd.Timestamp(year=current_year-1, month=1, day=1)
+end_date = pd.Timestamp(year=current_year, month=12, day=31)
+filtered_data = df.loc[start_date:end_date]
 
-# Ανοίξτε ένα αρχείο .txt για να αποθηκεύσετε τη μετάφραση
-with open('translated_book3.txt', 'w', encoding='utf-8') as f:
-    # Μεταφράστε κάθε πρόταση του βιβλίου
-    for sentence in sentences:
-        # Εκτέλεση της μετάφρασης
-        translation = translator(sentence)[0]['translation_text']
-        print(translation)
-        # Αποθηκεύστε τη μετάφραση στο αρχείο .txt
-        f.write(translation + '\n')
+monthly_counts = filtered_data.resample('M').size()
+
+plt.plot(monthly_counts.index[:len(filtered_data)], filtered_data['MAGNITUDE'])
+plt.title('Monthly Earthquake Magnitude')
+plt.xlabel('Date')
+plt.ylabel('Magnitude')
+plt.show()
+
+model = ARIMA(monthly_counts, order=(1, 1, 1))
+model_fit = model.fit()
+
+start_index = len(monthly_counts)
+end_index = start_index + 12
+forecast = model_fit.predict(start=start_index, end=end_index)
